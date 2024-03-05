@@ -138,7 +138,7 @@ clustering_result
 data(Titanic)
 # Convert the Titanic data to a data frame if necessary
 Titanic <- as.data.frame(Titanic)
-Titanic
+View(Titanic)
 
 # Build the rpart model and visualize
 rpart_model <- rpart(Survived ~ ., data = Titanic, method = "class")
@@ -146,7 +146,7 @@ plot(rpart_model)
 text(rpart_model, use.n = TRUE)
 
 # Build the ctree model and visualize
-ctree_model <- ctree(Survived ~ ., data = Titanic)
+ctree_model <- ctree(Survived ~., data = Titanic)
 plot(ctree_model)
 
 # Build the hclust model and visualize

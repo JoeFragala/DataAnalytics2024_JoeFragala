@@ -6,19 +6,19 @@ library(fpc)
 # Assuming 'bronx1' is loaded using readxl
 bronx1 <- read_excel("C:/Users/fragaj3/Dropbox/Spring2024/CSCI_4600_01_Data_Analytics/Lab/Lab03/rollingsales_bronx.xls") # Replace with your file path
 
-bronx1$SALE.PRICE<-sub("\\$","",bronx1$SALE.PRICE) 
-bronx1$SALE.PRICE<-as.numeric(gsub(",","", bronx1$SALE.PRICE)) 
-bronx1$GROSS.SQUARE.FEET<-as.numeric(gsub(",","", bronx1$GROSS.SQUARE.FEET)) 
-bronx1$LAND.SQUARE.FEET<-as.numeric(gsub(",","", bronx1$LAND.SQUARE.FEET)) 
-bronx1$SALE.DATE<- as.Date(gsub("[^]:digit:]]","",bronx1$SALE.DATE)) 
-bronx1$YEAR.BUILT<- as.numeric(gsub("[^]:digit:]]","",bronx1$YEAR.BUILT)) 
-bronx1$ZIP.CODE<- as.character(gsub("[^]:digit:]]","",bronx1$ZIP.CODE)) 
+bronx1$SALE_PRICE<-sub("\\$","",bronx1$SALE_PRICE) 
+bronx1$SALE_PRICE<-as.numeric(gsub(",","", bronx1$SALE_PRICE)) 
+bronx1$GROSS_SQUARE_FEET<-as.numeric(gsub(",","", bronx1$GROSS_SQUARE_FEET)) 
+bronx1$LAND_SQUARE_FEET<-as.numeric(gsub(",","", bronx1$LAND_SQUARE_FEET)) 
+bronx1$SALE_DATE<- as.Date(gsub("[^]:digit:]]","",bronx1$SALE_DATE)) 
+bronx1$YEAR_BUILT<- as.numeric(gsub("[^]:digit:]]","",bronx1$YEAR_BUILT)) 
+bronx1$ZIP_CODE<- as.character(gsub("[^]:digit:]]","",bronx1$ZIP_CODE)) 
 
 minprice<-10000
-bronx1<-bronx1[which(bronx1$SALE.PRICE>=minprice),]
+bronx1<-bronx1[which(bronx1$SALE_PRICE>=minprice),]
 nval<-dim(bronx1)[1]
 
-bronx1$ADDRESSONLY<- gsub("[,][[:print:]]*","",gsub("[ ]+","",trim(bronx1$ADDRESS))) bronxadd<-unique(data.frame(bronx1$ADDRESSONLY, bronx1$ZIP.CODE,stringsAsFactors=FALSE)) names(bronxadd)<-c("ADDRESSONLY","ZIP.CODE") bronxadd<-bronxadd[order(bronxadd$ADDRESSONLY),] duplicates<-duplicated(bronx1$ADDRESSONLY)
+bronx1$ADDRESSONLY<- gsub("[,][[:print:]]*","",gsub("[ ]+","",trim(bronx1$ADDRESS))) bronxadd<-unique(data.frame(bronx1$ADDRESSONLY, bronx1$ZIP_CODE,stringsAsFactors=FALSE)) names(bronxadd)<-c("ADDRESSONLY","ZIP_CODE") bronxadd<-bronxadd[order(bronxadd$ADDRESSONLY),] duplicates<-duplicated(bronx1$ADDRESSONLY)
 
 for(i in 1:2345) {
 if(duplicates[i]==FALSE) dupadd<-bronxadd[bronxadd$duplicates,1]
@@ -29,11 +29,11 @@ nsample=450
 addsample<-bronxadd[sample.int(dim(bronxadd),size=nsample),]#I use nval here 
 # may need to install this package
 library(ggmap)
-addrlist<-paste(addsample$ADDRESSONLY, "NY", addsample$ZIP.CODE, "US", sep=" ") 
+addrlist<-paste(addsample$ADDRESSONLY, "NY", addsample$ZIP_CODE, "US", sep=" ") 
 querylist<-geocode(addrlist) #This is cool. Take a break.
 
 matched<-(querylist$lat!=0 &&querylist$lon!=0) addsample<-cbind(addsample,querylist$lat,querylist$lon) 
-names(addsample)<-c("ADDRESSONLY","ZIPCODE","Latitude","Longitude")# correct the column na adduse<-merge(bronx1,addsample)
+names(addsample)<-c("ADDRESSONLY","ZIP_CODE","Latitude","Longitude")# correct the column na adduse<-merge(bronx1,addsample)
 
 adduse<-adduse[!is.na(adduse$Latitude),]
 mapcoord<-adduse[,c(2,3,24,25)]
@@ -49,7 +49,7 @@ ggmap(map) + geom_point(aes(x = mapcoord$Longitude, y = mapcoord$Latitude, size 
 mapmeans<-cbind(adduse,as.numeric(mapcoord$NEIGHBORHOOD))
 colnames(mapmeans)[26] <- "NEIGHBORHOOD" #This is the right way of renaming.
 
-keeps <- c("ZIP.CODE","NEIGHBORHOOD","TOTAL.UNITS","LAND.SQUARE.FEET","GROSS.SQUARE.FEET","SALE.PRICE","Latitude","Longitude") 
+keeps <- c("ZIP_CODE","NEIGHBORHOOD","TOTAL_UNITS","LAND_SQUARE_FEET","GROSS_SQUARE_FEET","SALE_PRICE","Latitude","Longitude") 
 mapmeans<-mapmeans[keeps]#Dropping others
 mapmeans$NEIGHBORHOOD<-as.numeric(mapcoord$NEIGHBORHOOD) 
 
